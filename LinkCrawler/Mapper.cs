@@ -75,7 +75,6 @@ namespace HttpSiteMapper
            else
            {
                //base case
-               //change the last index in the list to have an 'n' relation for New sub-branch starts after this
                if (!(tempNodeList.Contains(baseUrl)))
                {
                    tempNodeList.Add(baseUrl, level);

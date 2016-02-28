@@ -10,7 +10,8 @@ namespace HttpSiteMapper
     {
         public static void Main()
         {
-            String startingUrl = "";
+            System.Console.WriteLine("Enter a starting URL");
+            String startingUrl = System.Console.ReadLine();
             Mapper mapper = new Mapper(startingUrl);
 
             List<String> baseUrls = new List<String>();
@@ -21,6 +22,8 @@ namespace HttpSiteMapper
                 mapper.BuildBranch(url);
                 mapper.AddBranchToMap();
             }
+
+            System.Console.WriteLine(mapper.toStringFlat());
         }
     }
 }
