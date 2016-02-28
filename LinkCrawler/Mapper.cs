@@ -14,7 +14,7 @@ namespace HttpSiteMapper
         private MapBranchNodes tempNodeList;
         private String baseUrl { get; set; }
         private List<String> baseUrls { get; set; }
-        public SiteMap map;
+        private SiteMap map;
 
         public Mapper(String startingUrl)
         {
@@ -55,12 +55,12 @@ namespace HttpSiteMapper
             return list;
         }
 
-       internal void BuildBranch(String startUrl)
+       public void BuildBranch(String startUrl)
        {
            List<String> urls = GatherUrls(startUrl);
            String next = "";
            
-           if(urls != null)
+           if(! (urls.Count == 0))
            {
                next = urls[0];
                urls.RemoveAt(0);
@@ -84,11 +84,53 @@ namespace HttpSiteMapper
            }
        }
 
-       internal void AddBranchToMap()
+       public void AddBranchToMap()
        {
            map.branchCollection.Add(tempNodeList);
            tempNodeList.Clear();
        }
+
+       public String toStringFlat()
+       {
+           StringBuilder toStringText = new StringBuilder();
+
+           //show the root node
+           toStringText.Append("Starting URL:\r\n" + map.rootNode);
+
+           toStringText.Append("Its children:\r\n");
+           //for each branch starting with a direct child of the root
+           foreach (MapBranchNodes branch in map.branchCollection)
+           {
+               //for each actual node (URL) in that collection
+               foreach (MapBranchNode node in branch)
+               {
+                   toStringText.Append(node.url + "\r\n");
+               }
+           }
+
+           return toStringText.ToString();
+       }
+
+        public String toString()
+        {
+            StringBuilder toStringText = new StringBuilder();
+
+            //show the root node
+            toStringText.Append(map.rootNode + "\r\n");
+
+            //for each branch starting with a direct child of the root
+            foreach (MapBranchNodes branch in map.branchCollection)
+            {
+                toStringText.Append("Child:\r\n");
+                //for each actual node (URL) in that collection
+                foreach (MapBranchNode node in branch)
+                {
+                    toStringText.Append(node.url + " " + node.level + "\r\n");
+                }
+            }
+
+            return toStringText.ToString(); 
+        }
 
     }
 }
