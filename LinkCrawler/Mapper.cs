@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Net;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace HttpSiteMapper
 {
@@ -23,13 +25,33 @@ namespace HttpSiteMapper
 
         public List<String> GatherUrls(String currentUrl)
         {
-            
+            // shoutout to http://www.dotnetperls.com/scraping-html
+            // this is /heavily/ based on that article
             List<String> list = new List<String>();
 
-            // to do
-            // want to see if mediawiki contains a functionality which will gather all linked-to articles from the current article
-            // if it does not, I will need to write something to just target
+            WebClient w = new WebClient();
+            string file = w.DownloadString(currentUrl);
 
+            // 1.
+            // Find all matches in file.
+            MatchCollection m1 = Regex.Matches(file, @"(<a.*?>.*?</a>)",
+                RegexOptions.Singleline);
+
+            // 2.
+            // Loop over each match.
+            foreach (Match m in m1)
+            {
+                string value = m.Groups[1].Value;
+
+                // 3.
+                // Get href attribute.
+                Match m2 = Regex.Match(value, @"href=\""(.*?)\""",
+                RegexOptions.Singleline);
+                if (m2.Success)
+                {
+                    list.Add(m2.Groups[1].Value);
+                }
+            }
             return list;
         }
 
