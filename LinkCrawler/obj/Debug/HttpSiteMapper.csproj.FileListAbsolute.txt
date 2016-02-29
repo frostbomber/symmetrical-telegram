@@ -8,3 +8,6 @@ C:\Users\jpietrzak\Desktop\symmetrical-telegram-master\symmetrical-telegram-mast
 C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\bin\Debug\LinkCrawler.exe.config
 C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\obj\Debug\LinkCrawler.exe
 C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\obj\Debug\LinkCrawler.pdb
+C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\bin\Debug\LinkCrawler.exe
+C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\bin\Debug\LinkCrawler.pdb
+C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\obj\Debug\HttpSiteMapper.csprojResolveAssemblyReference.cache

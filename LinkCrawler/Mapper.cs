@@ -10,7 +10,7 @@ namespace HttpSiteMapper
 {
     class Mapper
     {
-        private int level = 0;
+        private int level = 0, lastIndex = 0;
         private MapBranchNodes tempNodeList = new MapBranchNodes();
         private String baseUrl { get; set; }
         public List<String> baseUrls { get; set; }
@@ -76,9 +76,21 @@ namespace HttpSiteMapper
                     RegexOptions.Singleline);
                     if (m2.Success)
                     {
+                        String relativeURL = "";
+                        //make all URL's relative if they are not already. makes analyzing them easier.
+                        if (m2.Groups[1].Value.Contains("http://wiki"))
+                        {
+                            relativeURL = Regex.Replace(m2.Groups[1].Value, @"http://wiki.*/index.php/", "/index.php/");
+                        }
+                        else
+                        {
+                            relativeURL = m2.Groups[1].Value;
+                        }
+                        //System.Console.WriteLine("Match: " + m2.Groups[1].Value);
+                        //System.Console.WriteLine("Relative-ized: " + relativeURL);
                         if ((!(m2.Groups[1].Value.Contains("#"))) && (!(m2.Groups[1].Value.Contains(":"))) && (m2.Groups[1].Value != currentUrl) && (m2.Groups[1].Value.Contains("/index.php/")) && (m2.Groups[1].Value != "/index.php/Main_Page") && (m2.Groups[1].Value != "/index.php/Technical_Support"))
                         {
-                            list.Add(m2.Groups[1].Value);
+                            list.Add(relativeURL);
                         }
                     }
                 }
@@ -147,13 +159,18 @@ namespace HttpSiteMapper
 
        public void AddBranchToMap()
        {
-           
+           int currentCount = tempNodeList.Count;
            map.branchCollection.Add( new MapBranchNodes() );
-           foreach(MapBranchNode node in tempNodeList)
+           while (lastIndex < currentCount)
            {
+               MapBranchNode node = tempNodeList[lastIndex];
                map.branchCollection[map.branchCollection.Count - 1].Add(node);
+               lastIndex++;
            }
-           tempNodeList.Clear();
+           //lastIndex will be one-too-many at the end of the loop, decrement by one
+           lastIndex--;
+
+           //by never clearing tempNodeList, we ensure that we don't include anything already added.
        }
 
        public String toStringFlat()
@@ -167,6 +184,7 @@ namespace HttpSiteMapper
            //for each branch starting with a direct child of the root
            foreach (MapBranchNodes branch in map.branchCollection)
            {
+               toStringText.Append("For branch beginning with: " + branch[0].url + "\r\n");
                //for each actual node (URL) in that collection
                foreach (MapBranchNode node in branch)
                {
