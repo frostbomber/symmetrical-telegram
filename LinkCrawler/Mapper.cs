@@ -168,7 +168,7 @@ namespace HttpSiteMapper
                lastIndex++;
            }
            //lastIndex will be one-too-many at the end of the loop, decrement by one
-           lastIndex--;
+           //lastIndex--;
 
            //by never clearing tempNodeList, we ensure that we don't include anything already added.
        }
@@ -184,7 +184,10 @@ namespace HttpSiteMapper
            //for each branch starting with a direct child of the root
            foreach (MapBranchNodes branch in map.branchCollection)
            {
-               toStringText.Append("For branch beginning with: " + branch[0].url + "\r\n");
+               if (branch.Count > 0)
+               {
+                   toStringText.Append("For branch beginning with: " + branch[0].url + "\r\n");
+               }
                //for each actual node (URL) in that collection
                foreach (MapBranchNode node in branch)
                {
