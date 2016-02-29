@@ -8,7 +8,7 @@ namespace HttpSiteMapper
 {
     class MapRootNode
     {
-        private String rootUrl {get;set;}
+        internal String rootUrl {get;set;}
 
         internal MapRootNode(String baseUrl)
         {

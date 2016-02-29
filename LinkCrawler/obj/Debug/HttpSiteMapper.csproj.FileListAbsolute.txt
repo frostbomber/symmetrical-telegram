@@ -1,1 +1,10 @@
 C:\Users\pietr\OneDrive\Documents\Visual Studio 2013\Projects\LinkCrawler\LinkCrawler\bin\Debug\LinkCrawler.exe.config
+C:\Users\jpietrzak\Desktop\symmetrical-telegram-master\symmetrical-telegram-master\LinkCrawler\bin\Debug\LinkCrawler.exe.config
+C:\Users\jpietrzak\Desktop\symmetrical-telegram-master\symmetrical-telegram-master\LinkCrawler\obj\Debug\HttpSiteMapper.csprojResolveAssemblyReference.cache
+C:\Users\jpietrzak\Desktop\symmetrical-telegram-master\symmetrical-telegram-master\LinkCrawler\bin\Debug\LinkCrawler.exe
+C:\Users\jpietrzak\Desktop\symmetrical-telegram-master\symmetrical-telegram-master\LinkCrawler\bin\Debug\LinkCrawler.pdb
+C:\Users\jpietrzak\Desktop\symmetrical-telegram-master\symmetrical-telegram-master\LinkCrawler\obj\Debug\LinkCrawler.exe
+C:\Users\jpietrzak\Desktop\symmetrical-telegram-master\symmetrical-telegram-master\LinkCrawler\obj\Debug\LinkCrawler.pdb
+C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\bin\Debug\LinkCrawler.exe.config
+C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\obj\Debug\LinkCrawler.exe
+C:\Users\jpietrzak\Documents\symmetrical-telegram\LinkCrawler\obj\Debug\LinkCrawler.pdb

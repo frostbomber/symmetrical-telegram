@@ -11,73 +11,135 @@ namespace HttpSiteMapper
     class Mapper
     {
         private int level = 0;
-        private MapBranchNodes tempNodeList;
+        private MapBranchNodes tempNodeList = new MapBranchNodes();
         private String baseUrl { get; set; }
-        private List<String> baseUrls { get; set; }
+        public List<String> baseUrls { get; set; }
         private SiteMap map;
+        public String uriBase { get; set; }
 
-        public Mapper(String startingUrl)
+        public Mapper(String startingUrl, String uri)
         {
             baseUrl = startingUrl;
             map = new SiteMap(startingUrl);
-            baseUrls = GatherUrls(baseUrl);
+            baseUrls = GatherUrls(baseUrl, true);
+            if (uri != null)
+            {
+                uriBase = uri;
+            }
+            else
+            {
+                uriBase = "http://wiki";
+            }
         }
 
-        public List<String> GatherUrls(String currentUrl)
+        public List<String> GatherUrls(String currentUrl, bool verbose)
         {
             // shoutout to http://www.dotnetperls.com/scraping-html
             // this is /heavily/ based on that article
             List<String> list = new List<String>();
 
             WebClient w = new WebClient();
-            string file = w.DownloadString(currentUrl);
+            string file = "";
 
-            // 1.
-            // Find all matches in file.
-            MatchCollection m1 = Regex.Matches(file, @"(<a.*?>.*?</a>)",
-                RegexOptions.Singleline);
-
-            // 2.
-            // Loop over each match.
-            foreach (Match m in m1)
+            try
             {
-                string value = m.Groups[1].Value;
-
-                // 3.
-                // Get href attribute.
-                Match m2 = Regex.Match(value, @"href=\""(.*?)\""",
-                RegexOptions.Singleline);
-                if (m2.Success)
+                if (verbose)
                 {
-                    list.Add(m2.Groups[1].Value);
+                    System.Console.WriteLine("Now collecting links on page: " + "http://wiki.advsyscon.com" + currentUrl + "\r\n");
                 }
+
+                //for some reason this doesn't work unless I hardcode this...
+                // to do --
+                if (!(currentUrl.Contains("http://wiki.advsyscon.com")))
+                {
+                    file = w.DownloadString(uriBase + currentUrl);
+                }
+                else
+                {
+                    file = w.DownloadString(currentUrl);
+                }
+            
+                // 1.
+                // Find all matches in file.
+                MatchCollection m1 = Regex.Matches(file, @"(<a.*?>.*?</a>)",
+                    RegexOptions.Singleline);
+
+                // 2.
+                // Loop over each match.
+                foreach (Match m in m1)
+                {
+                    string value = m.Groups[1].Value;
+
+                    // 3.
+                    // Get href attribute.
+                    Match m2 = Regex.Match(value, @"href=\""(.*?)\""",
+                    RegexOptions.Singleline);
+                    if (m2.Success)
+                    {
+                        if ((!(m2.Groups[1].Value.Contains("#"))) && (!(m2.Groups[1].Value.Contains(":"))) && (m2.Groups[1].Value != currentUrl) && (m2.Groups[1].Value.Contains("/index.php/")) && (m2.Groups[1].Value != "/index.php/Main_Page") && (m2.Groups[1].Value != "/index.php/Technical_Support"))
+                        {
+                            list.Add(m2.Groups[1].Value);
+                        }
+                    }
+                }
+            }
+
+            catch(WebException wex)
+            {
+                System.Console.WriteLine("There was an unhandled exception. Boooooo. \r\n");
+                System.Console.WriteLine(wex.ToString());
             }
             return list;
         }
 
-       public void BuildBranch(String startUrl)
+       public void BuildBranch(String startUrl, bool verbose)
        {
-           List<String> urls = GatherUrls(startUrl);
+           List<String> urls = GatherUrls(startUrl, verbose);
+
+           if (verbose)
+           {
+               foreach (String url in urls)
+               {
+                   System.Console.WriteLine(url);
+               }
+           }
            String next = "";
            
-           if(! (urls.Count == 0))
+           if(!(urls.Count == 0))
            {
-               next = urls[0];
-               urls.RemoveAt(0);
+               int index = 0;
 
+               //skip anything that is not a link to a wiki site
+               //this can be further generalized later
+               // to do --
+               //while ((!(urls[index].Contains("/index.php/"))) || ((urls[index] == startUrl)) || (urls[index].Contains(":")) || (urls[index] == "/index.php/Main_Page"))
+               //{
+               //    urls.RemoveAt(index);
+               //    index++;
+               //}
+               next = urls[index];
+               urls.RemoveAt(index);
+
+               //do the add ahead of time to avoid circular links
                level++;
-               BuildBranch(next);
-               if (!(tempNodeList.Contains(baseUrl)))
+               if (!(tempNodeList.Contains(startUrl)))
                {
-                   tempNodeList.Add(baseUrl, level);
+                   tempNodeList.Add(startUrl, level);
                }
+
+               //cut the recursion short if we hit a loop
+               if (!(tempNodeList.Contains(next)))
+               {
+                   BuildBranch(next, verbose);
+               }
+               
            }
            else
            {
                //base case
-               if (!(tempNodeList.Contains(baseUrl)))
+               if (!(tempNodeList.Contains(startUrl)))
                {
-                   tempNodeList.Add(baseUrl, level);
+                   tempNodeList.Add(startUrl, level);
                }
                level--;
            }
@@ -85,7 +147,12 @@ namespace HttpSiteMapper
 
        public void AddBranchToMap()
        {
-           map.branchCollection.Add(tempNodeList);
+           
+           map.branchCollection.Add( new MapBranchNodes() );
+           foreach(MapBranchNode node in tempNodeList)
+           {
+               map.branchCollection[map.branchCollection.Count - 1].Add(node);
+           }
            tempNodeList.Clear();
        }
 
@@ -94,7 +161,7 @@ namespace HttpSiteMapper
            StringBuilder toStringText = new StringBuilder();
 
            //show the root node
-           toStringText.Append("Starting URL:\r\n" + map.rootNode);
+           toStringText.Append("Starting URL:\r\n" + map.rootNode.rootUrl + "\r\n");
 
            toStringText.Append("Its children:\r\n");
            //for each branch starting with a direct child of the root
